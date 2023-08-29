@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "boilerplatecoder"
-version = "1.2.3"
+version = "1.0.0"
 
 repositories {
     mavenCentral()

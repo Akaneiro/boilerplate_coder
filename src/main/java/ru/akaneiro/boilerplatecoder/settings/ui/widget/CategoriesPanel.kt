@@ -5,12 +5,17 @@ import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.ToolbarDecorator
 import com.intellij.ui.components.JBList
 import ru.akaneiro.boilerplatecoder.model.Category
-import ru.akaneiro.boilerplatecoder.settings.ui.SettingsUiModel
+import ru.akaneiro.boilerplatecoder.settings.ui.SettingsView
+import ru.akaneiro.boilerplatecoder.widget.BasePanel
 import java.awt.GridLayout
 import javax.swing.JPanel
 import javax.swing.ListSelectionModel
 
-class CategoriesPanel : JPanel() {
+class CategoriesPanel : BasePanel<SettingsView.SettingsUiModel>() {
+
+    companion object {
+        private const val CATEGORY_TITLE_LABEL_TEXT = "Category"
+    }
 
     private val listModel = CollectionListModel<Category>()
     val list = JBList(listModel).apply {
@@ -24,10 +29,8 @@ class CategoriesPanel : JPanel() {
     var onMoveUpClicked: ((Int) -> Unit)? = null
     var onItemSelected: ((Int) -> Unit)? = null
 
-    private var listenersBlocked = false
-
     init {
-        border = IdeBorderFactory.createTitledBorder("Category", false)
+        border = IdeBorderFactory.createTitledBorder(CATEGORY_TITLE_LABEL_TEXT, false)
         layout = GridLayout(1, 1)
         toolbarDecorator.apply {
             setAddAction { onAddClicked?.invoke() }
@@ -39,8 +42,7 @@ class CategoriesPanel : JPanel() {
         list.addListSelectionListener { if (!it.valueIsAdjusting && !listenersBlocked) onItemSelected?.invoke(list.selectedIndex) }
     }
 
-    fun render(model: SettingsUiModel) {
-        listenersBlocked = true
+    override fun performRender(model: SettingsView.SettingsUiModel) {
         model.categories.forEachIndexed { index, categoryWithScreenElements ->
             if (index < listModel.size && listModel.getElementAt(index) != categoryWithScreenElements.category) {
                 listModel.setElementAt(categoryWithScreenElements.category, index)
@@ -58,6 +60,5 @@ class CategoriesPanel : JPanel() {
                 list.clearSelection()
             }
         }
-        listenersBlocked = false
     }
 }

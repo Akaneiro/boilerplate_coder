@@ -20,13 +20,13 @@ class SettingsScreenPanel(project: Project): JPanel() {
         val mainPanel = JPanel().apply {
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
             add(
-                JBSplitter(0.5f).apply {
+                JBSplitter(0.3f).apply {
                     firstComponent = categoriesPanel
                     secondComponent = categoryDetailsPanel
                 }
             )
             add(
-                JBSplitter(0.5f).apply {
+                JBSplitter(0.3f).apply {
                     firstComponent = screenElementsPanel
                     secondComponent = screenElementDetailsPanel
                 }
@@ -41,7 +41,7 @@ class SettingsScreenPanel(project: Project): JPanel() {
         add(mainPanel)
     }
 
-    fun render(state: SettingsUiModel) {
+    fun render(state: SettingsView.SettingsUiModel) {
         categoriesPanel.render(state)
         categoryDetailsPanel.render(state)
         screenElementsPanel.render(state)

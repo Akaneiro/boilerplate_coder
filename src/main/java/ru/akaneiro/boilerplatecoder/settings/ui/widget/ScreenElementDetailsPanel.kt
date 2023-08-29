@@ -1,17 +1,22 @@
 package ru.akaneiro.boilerplatecoder.settings.ui.widget
 
 import com.intellij.ui.IdeBorderFactory
-import ru.akaneiro.boilerplatecoder.settings.ui.SettingsUiModel
-import ru.akaneiro.boilerplatecoder.widget.addTextChangeListener
-import ru.akaneiro.boilerplatecoder.widget.constraintsLeft
-import ru.akaneiro.boilerplatecoder.widget.constraintsRight
-import ru.akaneiro.boilerplatecoder.widget.updateText
+import ru.akaneiro.boilerplatecoder.settings.ui.SettingsView
+import ru.akaneiro.boilerplatecoder.widget.*
 import java.awt.GridBagLayout
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 
-class ScreenElementDetailsPanel : JPanel() {
+class ScreenElementDetailsPanel : BasePanel<SettingsView.SettingsUiModel>() {
+
+    companion object {
+        private const val ELEMENT_NAME_LABEL_TEXT = "Element Name:"
+        private const val FILE_NAME_LABEL_TEXT = "File Name:"
+        private const val FILE_NAME_PREVIEW_LABEL_TEXT = "File Name Preview:"
+        private const val SUBDIRECTORY_LABEL_TEXT = "Subdirectory:"
+        private const val ELEMENT_DETAILS_LABEL_TEXT = "Element Details"
+    }
 
     var onNameTextChanged: ((String) -> Unit)? = null
     var onFileNameTextChanged: ((String) -> Unit)? = null
@@ -19,22 +24,20 @@ class ScreenElementDetailsPanel : JPanel() {
 
     private val nameTextField = JTextField()
     private val fileNameTextField = JTextField()
-    private val screenElementNameLabel = JLabel("Element Name:")
-    private val fileNameLabel = JLabel("File Name:")
-    private val fileNamePreviewLabel = JLabel("File Name Preview:").apply {
+    private val screenElementNameLabel = JLabel(ELEMENT_NAME_LABEL_TEXT)
+    private val fileNameLabel = JLabel(FILE_NAME_LABEL_TEXT)
+    private val fileNamePreviewLabel = JLabel(FILE_NAME_PREVIEW_LABEL_TEXT).apply {
         isEnabled = false
     }
     private val fileNamePreview = JTextField().apply {
         isEnabled = false
     }
 
-    private val subdirectoryLabel = JLabel("Subdirectory:")
+    private val subdirectoryLabel = JLabel(SUBDIRECTORY_LABEL_TEXT)
     private val subdirectoryTextField = JTextField()
 
-    private var listenersBlocked = false
-
     init {
-        border = IdeBorderFactory.createTitledBorder("Element Details", false)
+        border = IdeBorderFactory.createTitledBorder(ELEMENT_DETAILS_LABEL_TEXT, false)
         layout = GridBagLayout()
         add(screenElementNameLabel, constraintsLeft(0, 0))
         add(nameTextField, constraintsRight(1, 0))
@@ -50,8 +53,7 @@ class ScreenElementDetailsPanel : JPanel() {
         subdirectoryTextField.addTextChangeListener { if (!listenersBlocked) onSubdirectoryTextChanged?.invoke(it) }
     }
 
-    fun render(model: SettingsUiModel) {
-        listenersBlocked = true
+    override fun performRender(model: SettingsView.SettingsUiModel) {
         val selectedElement = model.selectedElement
         nameTextField.updateText(selectedElement?.name ?: "")
         fileNameTextField.updateText(selectedElement?.filenameTemplate ?: "")
@@ -61,6 +63,5 @@ class ScreenElementDetailsPanel : JPanel() {
         isEnabled = selectedElement != null
         components.filter { it != fileNamePreview && it != fileNamePreviewLabel }
             .forEach { it.isEnabled = selectedElement != null }
-        listenersBlocked = false
     }
 }

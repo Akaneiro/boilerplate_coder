@@ -12,7 +12,9 @@ const val SCREEN_GENERATOR_CONFIG_STORAGE_FILE = "screenGeneratorConfigStorage.x
     name = SCREEN_GENERATOR_CONFIG_NAME,
     storages = [Storage(SCREEN_GENERATOR_CONFIG_STORAGE_FILE)]
 )
-class ScreenGeneratorApplicationComponent : Serializable, PersistentStateComponent<ScreenGeneratorApplicationComponent> {
+class ScreenGeneratorApplicationComponent :
+    PersistentStateComponent<ScreenGeneratorApplicationComponent>,
+    Serializable {
 
     companion object {
         fun getInstance() = ServiceManager.getService(ScreenGeneratorApplicationComponent::class.java)

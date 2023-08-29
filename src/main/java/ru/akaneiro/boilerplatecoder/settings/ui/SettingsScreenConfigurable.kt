@@ -1,7 +1,13 @@
 package ru.akaneiro.boilerplatecoder.settings.ui
 
+import com.intellij.ide.util.TreeFileChooserDialog
+import com.intellij.openapi.fileChooser.FileChooser
+import com.intellij.openapi.fileChooser.FileChooserDescriptor
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.util.Consumer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -33,29 +39,29 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
         panel = SettingsScreenPanel(project)
 
         with(panel.categoriesPanel) {
-            onAddClicked = { viewModel.setAction(SettingsAction.AddCategory) }
-            onRemoveClicked = { viewModel.setAction(SettingsAction.RemoveCategory) }
-            onItemSelected = { viewModel.setAction(SettingsAction.SelectCategory(it)) }
+            onAddClicked = { viewModel.setAction(SettingsView.SettingsAction.AddCategory) }
+            onRemoveClicked = { viewModel.setAction(SettingsView.SettingsAction.RemoveCategory) }
+            onItemSelected = { viewModel.setAction(SettingsView.SettingsAction.SelectCategory(it)) }
         }
 
         with (panel.categoryDetailsPanel) {
-            onNameTextChanged = { viewModel.setAction(SettingsAction.ChangeCategoryName(it)) }
+            onNameTextChanged = { viewModel.setAction(SettingsView.SettingsAction.ChangeCategoryName(it)) }
         }
 
         with(panel.screenElementsPanel) {
-            onAddClicked = { viewModel.setAction(SettingsAction.AddScreenElement) }
-            onItemSelected = { viewModel.setAction(SettingsAction.SelectScreenElement(it)) }
-            onRemoveClicked = { viewModel.setAction(SettingsAction.RemoveScreenElement) }
+            onAddClicked = { viewModel.setAction(SettingsView.SettingsAction.AddScreenElement) }
+            onItemSelected = { viewModel.setAction(SettingsView.SettingsAction.SelectScreenElement(it)) }
+            onRemoveClicked = { viewModel.setAction(SettingsView.SettingsAction.RemoveScreenElement) }
         }
 
         with(panel.screenElementDetailsPanel) {
-            onNameTextChanged = { viewModel.setAction(SettingsAction.RenameScreenElement(it)) }
-            onSubdirectoryTextChanged = { viewModel.setAction(SettingsAction.ChangeScreenElementSubdirectory(it)) }
-            onFileNameTextChanged = { viewModel.setAction(SettingsAction.ChangeScreenElementFilename(it)) }
+            onNameTextChanged = { viewModel.setAction(SettingsView.SettingsAction.RenameScreenElement(it)) }
+            onSubdirectoryTextChanged = { viewModel.setAction(SettingsView.SettingsAction.ChangeScreenElementSubdirectory(it)) }
+            onFileNameTextChanged = { viewModel.setAction(SettingsView.SettingsAction.ChangeScreenElementFilename(it)) }
         }
 
         with (panel.codePanel) {
-            onTemplateTextChanged = { viewModel.setAction(SettingsAction.UpdateScreenElementTemplate(it)) }
+            onTemplateTextChanged = { viewModel.setAction(SettingsView.SettingsAction.UpdateScreenElementTemplate(it)) }
         }
 
         launch {
@@ -72,13 +78,13 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
     }
 
     override fun apply() {
-        launch { viewModel.setAction(SettingsAction.ApplySettings) }
+        launch { viewModel.setAction(SettingsView.SettingsAction.ApplySettings) }
     }
 
     override fun getDisplayName(): String = "Boilerplate Coder"
 
-    private fun SettingsStore.State.toModel(): SettingsUiModel {
-        return SettingsUiModel(
+    private fun SettingsStore.State.toModel(): SettingsView.SettingsUiModel {
+        return SettingsView.SettingsUiModel(
             categories = this.categories,
             selectedCategoryIndex = this.selectedCategoryIndex,
             selectedElementIndex = this.selectedElementIndex,

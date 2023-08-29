@@ -1,12 +1,12 @@
 package ru.akaneiro.boilerplatecoder.settings.ui.widget
 
 import com.intellij.openapi.project.Project
-import com.intellij.ui.EditorTextField
 import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.LanguageTextField
 import com.intellij.ui.components.JBScrollPane
 import org.jetbrains.kotlin.idea.KotlinLanguage
-import ru.akaneiro.boilerplatecoder.settings.ui.SettingsUiModel
+import ru.akaneiro.boilerplatecoder.settings.ui.SettingsView
+import ru.akaneiro.boilerplatecoder.widget.BasePanel
 import ru.akaneiro.boilerplatecoder.widget.addTextChangeListener
 import ru.akaneiro.boilerplatecoder.widget.updateText
 import java.awt.Dimension
@@ -14,14 +14,16 @@ import java.awt.GridLayout
 import javax.swing.BoxLayout
 import javax.swing.JPanel
 
-class CodePanel(
-    private val project: Project,
-) : JPanel() {
+class CodePanel(private val project: Project) : BasePanel<SettingsView.SettingsUiModel>() {
+
+    private companion object {
+        private const val CODE_TEMPLATE_LABEL_TEXT = "Code Template"
+        private const val SAMPLE_CODE_LABEL_TEXT = "Sample Code"
+    }
 
     var onTemplateTextChanged: ((String) -> Unit)? = null
     private val templateTextField = createTemplateTextField()
     private val sampleTextField = createSampleTextField()
-    private var listenersBlocked = false
 
     init {
         layout = GridLayout(2, 1)
@@ -34,14 +36,14 @@ class CodePanel(
 
     private fun createTemplatePanel() =
         JPanel().apply {
-            border = IdeBorderFactory.createTitledBorder("Code Template", false)
+            border = IdeBorderFactory.createTitledBorder(CODE_TEMPLATE_LABEL_TEXT, false)
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
             add(JBScrollPane(templateTextField))
         }
 
     private fun createSamplePanel() =
         JPanel().apply {
-            border = IdeBorderFactory.createTitledBorder("Sample Code", false)
+            border = IdeBorderFactory.createTitledBorder(SAMPLE_CODE_LABEL_TEXT, false)
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
             add(JBScrollPane(sampleTextField))
         }
@@ -50,10 +52,11 @@ class CodePanel(
         LanguageTextField(KotlinLanguage.INSTANCE, project, "", false)
 
     private fun createSampleTextField() =
-        EditorTextField().apply { isEnabled = false }
+        LanguageTextField(KotlinLanguage.INSTANCE, project, "", false).apply {
+            isEnabled = false
+        }
 
-    fun render(model: SettingsUiModel) {
-        listenersBlocked = true
+    override fun performRender(model: SettingsView.SettingsUiModel) {
         val template = model.selectedElementTemplate
         val renderedSampleCode = model.renderedSampleCode
         if (template != null && renderedSampleCode != null) {
@@ -65,7 +68,6 @@ class CodePanel(
             isVisible = false
             setEnabledAll(false)
         }
-        listenersBlocked = false
     }
 
     private fun setEnabledAll(isEnabled: Boolean) {

@@ -8,7 +8,7 @@ import ru.akaneiro.boilerplatecoder.newscreen.ui.NewScreenDialog
 import javax.inject.Singleton
 
 @Singleton
-@Component()
+@Component
 interface NewScreenComponent {
 
     @Component.Factory

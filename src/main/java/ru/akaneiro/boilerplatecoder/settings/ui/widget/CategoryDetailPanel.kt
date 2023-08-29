@@ -1,40 +1,38 @@
 package ru.akaneiro.boilerplatecoder.settings.ui.widget
 
 import com.intellij.ui.IdeBorderFactory
-import ru.akaneiro.boilerplatecoder.settings.ui.SettingsUiModel
-import ru.akaneiro.boilerplatecoder.widget.addTextChangeListener
-import ru.akaneiro.boilerplatecoder.widget.constraintsLeft
-import ru.akaneiro.boilerplatecoder.widget.constraintsRight
-import ru.akaneiro.boilerplatecoder.widget.updateText
+import ru.akaneiro.boilerplatecoder.settings.ui.SettingsView
+import ru.akaneiro.boilerplatecoder.widget.*
 import java.awt.GridBagLayout
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
 
-class CategoryDetailsPanel : JPanel() {
+class CategoryDetailsPanel : BasePanel<SettingsView.SettingsUiModel>() {
+
+    private companion object {
+        private const val CATEGORY_DETAILS_TEXT_LABEL = "Category Details"
+        private const val CATEGORY_NAME_TEXT_LABEL = "Category Name:"
+    }
 
     var onNameTextChanged: ((String) -> Unit)? = null
 
     private val nameTextField = JTextField()
 
-    private var listenersBlocked = false
-
     init {
-        border = IdeBorderFactory.createTitledBorder("Category Details", false)
+        border = IdeBorderFactory.createTitledBorder(CATEGORY_DETAILS_TEXT_LABEL, false)
         layout = GridBagLayout()
 
-        add(JLabel("Category Name:"), constraintsLeft(0, 0))
+        add(JLabel(CATEGORY_NAME_TEXT_LABEL), constraintsLeft(0, 0))
         add(nameTextField, constraintsRight(1, 0))
 
         nameTextField.addTextChangeListener { if (!listenersBlocked) onNameTextChanged?.invoke(it) }
     }
 
-    fun render(model: SettingsUiModel) {
-        listenersBlocked = true
+    override fun performRender(model: SettingsView.SettingsUiModel) {
         val selectedCategory = model.selectedCategoryWithScreenElements
         nameTextField.updateText(selectedCategory?.category?.name ?: "")
         isEnabled = selectedCategory != null
         components.forEach { it.isEnabled = selectedCategory != null }
-        listenersBlocked = false
     }
 }
