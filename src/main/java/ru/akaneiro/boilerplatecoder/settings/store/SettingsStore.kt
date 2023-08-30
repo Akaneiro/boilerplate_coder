@@ -5,7 +5,10 @@ import ru.akaneiro.boilerplatecoder.model.ScreenElement
 
 interface SettingsStore {
 
-    interface Effect
+    interface Effect {
+        object ShowFileChooserDialog: Effect
+        object ShowFileSaverDialog: Effect
+    }
 
     data class State(
         val isModified: Boolean = true,

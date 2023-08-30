@@ -1,5 +1,10 @@
 package ru.akaneiro.boilerplatecoder.settings.store
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.intellij.openapi.vfs.VfsUtil
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileWrapper
 import kotlinx.coroutines.runBlocking
 import ru.akaneiro.boilerplatecoder.base.BaseViewModel
 import ru.akaneiro.boilerplatecoder.model.Category
@@ -8,12 +13,14 @@ import ru.akaneiro.boilerplatecoder.model.ScreenElement
 import ru.akaneiro.boilerplatecoder.model.Settings
 import ru.akaneiro.boilerplatecoder.settings.ui.SettingsView
 import ru.akaneiro.boilerplatecoder.settings.usecase.ApplySettingsUseCase
+import ru.akaneiro.boilerplatecoder.settings.usecase.ConvertImportSettingsFromJsonUseCase
 import ru.akaneiro.boilerplatecoder.settings.usecase.LoadCategoriesWithScreenElementsUseCase
 import javax.inject.Inject
 
 class SettingsViewModel @Inject constructor(
     loadCategoriesWithScreenElementsUseCase: LoadCategoriesWithScreenElementsUseCase,
     private val applySettingsUseCase: ApplySettingsUseCase,
+    private val convertImportSettingsFromJsonUseCase: ConvertImportSettingsFromJsonUseCase,
 ) : BaseViewModel<SettingsStore.State, SettingsStore.Effect, SettingsView.SettingsAction>() {
 
     init {
@@ -57,6 +64,60 @@ class SettingsViewModel @Inject constructor(
 
             is SettingsView.SettingsAction.ChangeScreenElementFilename -> {
                 changeScreenElementFilename(action.newFilename)
+            }
+
+            SettingsView.SettingsAction.ImportSettingsClicked -> {
+                setEffect {
+                    SettingsStore.Effect.ShowFileChooserDialog
+                }
+            }
+
+            SettingsView.SettingsAction.ExportSettingsClicked -> {
+                setEffect {
+                    SettingsStore.Effect.ShowFileSaverDialog
+                }
+            }
+
+            is SettingsView.SettingsAction.SettingsFileChosen -> {
+                importSettingsFromFile(action.settingsFile)
+            }
+
+            is SettingsView.SettingsAction.ExportFileResult -> {
+                action.result?.run {
+                    exportSettingsToFile(this)
+                }
+            }
+        }
+    }
+
+    private fun importSettingsFromFile(file: VirtualFile) {
+        runBlocking {
+            val jsonString = VfsUtil.loadText(file)
+            try {
+                val categories = convertImportSettingsFromJsonUseCase.invoke(jsonString)
+                setState {
+                    copy(
+                        isModified = true,
+                        categories = categories,
+                        selectedCategoryIndex = null,
+                        selectedElementIndex = null,
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    private fun exportSettingsToFile(result: VirtualFileWrapper) {
+        runBlocking {
+            with(getState()) {
+                val settingsToExport = Settings(
+                    screenElements = categories.flatMap { it.screenElements }.toMutableList(),
+                    categories = categories.map { it.category }.toMutableList()
+                )
+                val serialized = Gson().toJson(settingsToExport)
+                result.file.writeText(serialized)
             }
         }
     }

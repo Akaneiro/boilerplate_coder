@@ -1,13 +1,9 @@
 package ru.akaneiro.boilerplatecoder.settings.ui
 
-import com.intellij.ide.util.TreeFileChooserDialog
-import com.intellij.openapi.fileChooser.FileChooser
-import com.intellij.openapi.fileChooser.FileChooserDescriptor
-import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.fileChooser.*
+import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.util.Consumer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -38,13 +34,18 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
         DaggerSettingsScreenComponent.factory().create(project).inject(this)
         panel = SettingsScreenPanel(project)
 
+        with(panel) {
+            onImportSettingsClick = { viewModel.setAction(SettingsView.SettingsAction.ImportSettingsClicked) }
+            onExportSettingsClick = { viewModel.setAction(SettingsView.SettingsAction.ExportSettingsClicked) }
+        }
+
         with(panel.categoriesPanel) {
             onAddClicked = { viewModel.setAction(SettingsView.SettingsAction.AddCategory) }
             onRemoveClicked = { viewModel.setAction(SettingsView.SettingsAction.RemoveCategory) }
             onItemSelected = { viewModel.setAction(SettingsView.SettingsAction.SelectCategory(it)) }
         }
 
-        with (panel.categoryDetailsPanel) {
+        with(panel.categoryDetailsPanel) {
             onNameTextChanged = { viewModel.setAction(SettingsView.SettingsAction.ChangeCategoryName(it)) }
         }
 
@@ -56,11 +57,12 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
 
         with(panel.screenElementDetailsPanel) {
             onNameTextChanged = { viewModel.setAction(SettingsView.SettingsAction.RenameScreenElement(it)) }
-            onSubdirectoryTextChanged = { viewModel.setAction(SettingsView.SettingsAction.ChangeScreenElementSubdirectory(it)) }
+            onSubdirectoryTextChanged =
+                { viewModel.setAction(SettingsView.SettingsAction.ChangeScreenElementSubdirectory(it)) }
             onFileNameTextChanged = { viewModel.setAction(SettingsView.SettingsAction.ChangeScreenElementFilename(it)) }
         }
 
-        with (panel.codePanel) {
+        with(panel.codePanel) {
             onTemplateTextChanged = { viewModel.setAction(SettingsView.SettingsAction.UpdateScreenElementTemplate(it)) }
         }
 
@@ -69,8 +71,42 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
                 panel.render(it)
             }
         }
+        launch {
+            viewModel.effect.collect {
+                when (it) {
+                    SettingsStore.Effect.ShowFileChooserDialog -> {
+                        showFileChooser()
+                    }
+                    SettingsStore.Effect.ShowFileSaverDialog -> {
+                        showFileSaver()
+                    }
+                }
+            }
+        }
 
         return panel
+    }
+
+    private fun showFileSaver() {
+        val result = FileSaverDialogImpl(
+            FileSaverDescriptor("Test", "TEST"),
+            project,
+        ).save("boilerplate_coder_settings.json")
+        launch {
+            viewModel.setAction(SettingsView.SettingsAction.ExportFileResult(result))
+        }
+    }
+
+    private fun showFileChooser() {
+        FileChooser.chooseFile(
+            FileChooserDescriptorFactory.createSingleFileDescriptor(),
+            project,
+            null,
+        ) { virtualFile ->
+            launch {
+                viewModel.setAction(SettingsView.SettingsAction.SettingsFileChosen(virtualFile))
+            }
+        }
     }
 
     override fun isModified(): Boolean {
