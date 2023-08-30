@@ -37,6 +37,7 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
         with(panel) {
             onImportSettingsClick = { viewModel.setAction(SettingsView.SettingsAction.ImportSettingsClicked) }
             onExportSettingsClick = { viewModel.setAction(SettingsView.SettingsAction.ExportSettingsClicked) }
+            onHelpClick = { viewModel.setAction(SettingsView.SettingsAction.HelpClicked) }
         }
 
         with(panel.categoriesPanel) {
@@ -80,11 +81,18 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
                     SettingsStore.Effect.ShowFileSaverDialog -> {
                         showFileSaver()
                     }
+                    SettingsStore.Effect.ShowHelpScreen -> {
+                        showHelpDialog()
+                    }
                 }
             }
         }
 
         return panel
+    }
+
+    private fun showHelpDialog() {
+        HelpDialog().show()
     }
 
     private fun showFileSaver() {

@@ -85,6 +85,12 @@ class SettingsViewModel @Inject constructor(
                     exportSettingsToFile(this)
                 }
             }
+
+            SettingsView.SettingsAction.HelpClicked -> {
+                setEffect {
+                    SettingsStore.Effect.ShowHelpScreen
+                }
+            }
         }
     }
 

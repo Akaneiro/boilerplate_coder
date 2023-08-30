@@ -23,6 +23,7 @@ interface SettingsView {
 
         object ImportSettingsClicked : SettingsAction
         object ExportSettingsClicked : SettingsAction
+        object HelpClicked: SettingsAction
         data class ExportFileResult(val result: VirtualFileWrapper?) : SettingsAction
         data class SettingsFileChosen(val settingsFile: VirtualFile) : SettingsAction
     }

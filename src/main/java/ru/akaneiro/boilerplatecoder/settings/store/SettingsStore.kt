@@ -8,6 +8,7 @@ interface SettingsStore {
     interface Effect {
         object ShowFileChooserDialog : Effect
         object ShowFileSaverDialog : Effect
+        object ShowHelpScreen: Effect
     }
 
     data class State(

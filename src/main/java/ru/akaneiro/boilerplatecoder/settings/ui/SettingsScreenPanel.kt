@@ -1,19 +1,25 @@
 package ru.akaneiro.boilerplatecoder.settings.ui
 
 import com.intellij.openapi.project.Project
+import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.labels.LinkLabel
 import ru.akaneiro.boilerplatecoder.settings.ui.widget.*
 import java.awt.BorderLayout
+import java.awt.Dimension
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JPanel
+import javax.swing.JSeparator
+import javax.swing.JToolBar.Separator
+import javax.swing.SwingConstants
 
-class SettingsScreenPanel(project: Project): JPanel() {
+class SettingsScreenPanel(project: Project) : JPanel() {
 
     companion object {
         private const val IMPORT_SETTINGS_LABEL_TEXT = "Import Settings"
         private const val EXPORT_SETTINGS_LABEL_TEXT = "Export Settings"
+        private const val HELP_LABEL_TEXT = "Help"
     }
 
     val categoriesPanel = CategoriesPanel()
@@ -24,12 +30,15 @@ class SettingsScreenPanel(project: Project): JPanel() {
 
     var onImportSettingsClick: (() -> Unit)? = null
     var onExportSettingsClick: (() -> Unit)? = null
+    var onHelpClick: (() -> Unit)? = null
 
     init {
         layout = BorderLayout()
         val importSettingsPanel = JPanel(FlowLayout(FlowLayout.TRAILING)).apply {
             add(LinkLabel.create(IMPORT_SETTINGS_LABEL_TEXT) { onImportSettingsClick?.invoke() })
             add(LinkLabel.create(EXPORT_SETTINGS_LABEL_TEXT) { onExportSettingsClick?.invoke() })
+            add(JSeparator(SwingConstants.VERTICAL))
+            add(LinkLabel.create(HELP_LABEL_TEXT) { onHelpClick?.invoke() })
         }
         val mainPanel = JPanel().apply {
             layout = BoxLayout(this, BoxLayout.Y_AXIS)
