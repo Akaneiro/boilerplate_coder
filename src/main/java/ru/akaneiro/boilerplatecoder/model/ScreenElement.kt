@@ -15,7 +15,6 @@ data class ScreenElement(
     var name: String = "",
     var template: String = "",
     var filenameTemplate: String = "",
-    var categoryId: Int = 0,
     var subdirectory: String = "",
 ) : Serializable {
 
@@ -39,11 +38,10 @@ data class ScreenElement(
     override fun toString(): String = name
 
     companion object {
-        fun getDefault(categoryId: Int) = ScreenElement(
+        fun getDefault() = ScreenElement(
             name = DEFAULT_SCREEN_ELEMENT_NAME,
             filenameTemplate = DEFAULT_SCREEN_ELEMENT_FILE_NAME,
             template = DEFAULT_SCREEN_ELEMENT_TEMPLATE,
-            categoryId = categoryId,
             subdirectory = "",
         )
     }

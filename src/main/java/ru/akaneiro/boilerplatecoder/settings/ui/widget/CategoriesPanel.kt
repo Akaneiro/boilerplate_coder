@@ -43,11 +43,11 @@ class CategoriesPanel : BasePanel<SettingsView.SettingsUiModel>() {
     }
 
     override fun performRender(model: SettingsView.SettingsUiModel) {
-        model.categories.forEachIndexed { index, categoryWithScreenElements ->
-            if (index < listModel.size && listModel.getElementAt(index) != categoryWithScreenElements.category) {
-                listModel.setElementAt(categoryWithScreenElements.category, index)
+        model.categories.forEachIndexed { index, category ->
+            if (index < listModel.size && listModel.getElementAt(index) != category) {
+                listModel.setElementAt(category, index)
             } else if (index >= listModel.size) {
-                listModel.add(categoryWithScreenElements.category)
+                listModel.add(category)
             }
         }
         if (listModel.size > model.categories.size) {

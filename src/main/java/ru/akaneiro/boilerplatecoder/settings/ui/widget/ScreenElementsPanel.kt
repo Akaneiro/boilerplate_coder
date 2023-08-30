@@ -8,7 +8,6 @@ import ru.akaneiro.boilerplatecoder.model.ScreenElement
 import ru.akaneiro.boilerplatecoder.settings.ui.SettingsView
 import ru.akaneiro.boilerplatecoder.widget.BasePanel
 import java.awt.GridLayout
-import javax.swing.JPanel
 import javax.swing.ListSelectionModel
 
 class ScreenElementsPanel : BasePanel<SettingsView.SettingsUiModel>() {
@@ -43,16 +42,16 @@ class ScreenElementsPanel : BasePanel<SettingsView.SettingsUiModel>() {
     }
 
     override fun performRender(model: SettingsView.SettingsUiModel) {
-        model.selectedCategoryWithScreenElements?.screenElements?.forEachIndexed { index, screenElement ->
+        model.selectedCategory?.screenElements?.forEachIndexed { index, screenElement ->
             if (index < listModel.size && listModel.getElementAt(index) != screenElement) {
                 listModel.setElementAt(screenElement, index)
             } else if (index >= listModel.size) {
                 listModel.add(screenElement)
             }
         }
-        if (listModel.size > (model.selectedCategoryWithScreenElements?.screenElements?.size ?: 0)) {
+        if (listModel.size > (model.selectedCategory?.screenElements?.size ?: 0)) {
             listModel.removeRange(
-                model.selectedCategoryWithScreenElements?.screenElements?.size ?: 0,
+                model.selectedCategory?.screenElements?.size ?: 0,
                 listModel.size - 1
             )
         }

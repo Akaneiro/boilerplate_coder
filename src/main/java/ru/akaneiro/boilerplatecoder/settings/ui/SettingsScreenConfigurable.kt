@@ -124,7 +124,7 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
             categories = this.categories,
             selectedCategoryIndex = this.selectedCategoryIndex,
             selectedElementIndex = this.selectedElementIndex,
-            selectedCategoryWithScreenElements = this.selectedCategoryWithScreenElements,
+            selectedCategory = this.selectedCategory,
             selectedElement = this.selectedElement,
             renderedFileName = this.selectedElement?.renderFileName(),
             selectedElementTemplate = this.selectedElement?.template,

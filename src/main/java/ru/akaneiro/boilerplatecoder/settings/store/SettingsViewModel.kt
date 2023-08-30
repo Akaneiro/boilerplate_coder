@@ -1,14 +1,12 @@
 package ru.akaneiro.boilerplatecoder.settings.store
 
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileWrapper
 import kotlinx.coroutines.runBlocking
 import ru.akaneiro.boilerplatecoder.base.BaseViewModel
 import ru.akaneiro.boilerplatecoder.model.Category
-import ru.akaneiro.boilerplatecoder.model.CategoryWithScreenElements
 import ru.akaneiro.boilerplatecoder.model.ScreenElement
 import ru.akaneiro.boilerplatecoder.model.Settings
 import ru.akaneiro.boilerplatecoder.settings.ui.SettingsView
@@ -113,8 +111,7 @@ class SettingsViewModel @Inject constructor(
         runBlocking {
             with(getState()) {
                 val settingsToExport = Settings(
-                    screenElements = categories.flatMap { it.screenElements }.toMutableList(),
-                    categories = categories.map { it.category }.toMutableList()
+                    categories = getState().categories.toMutableList(),
                 )
                 val serialized = Gson().toJson(settingsToExport)
                 result.file.writeText(serialized)
@@ -133,7 +130,7 @@ class SettingsViewModel @Inject constructor(
 
     private fun modifyScreenElement(screenElementModifier: ScreenElement.() -> ScreenElement) = runBlocking {
         val currentState = getState()
-        currentState.selectedCategoryWithScreenElements?.let { selectedCategoryWithScreenElements ->
+        currentState.selectedCategory?.let { selectedCategoryWithScreenElements ->
             val newScreenElements = selectedCategoryWithScreenElements.screenElements.toMutableList()
                 .apply {
                     set(
@@ -183,10 +180,7 @@ class SettingsViewModel @Inject constructor(
 
     private fun applySettings() {
         val newSettings = state.value.run {
-            Settings(
-                screenElements = categories.flatMap { it.screenElements }.toMutableList(),
-                categories = categories.map { it.category }.toMutableList()
-            )
+            Settings(categories = categories.toMutableList())
         }
         applySettingsUseCase.invoke(newSettings)
     }
@@ -195,7 +189,7 @@ class SettingsViewModel @Inject constructor(
         val newId = state.value.categories.size
         val newCategories = state.value.categories.toMutableList()
             .apply {
-                add(CategoryWithScreenElements.getDefault(Category.getDefault(newId)))
+                add(Category.getDefault(newId))
             }
         setState {
             copy(
@@ -232,10 +226,10 @@ class SettingsViewModel @Inject constructor(
         val categoryData = currentState.categories[selectedCategoryIndex!!]
         val newCategories = currentState.categories.toMutableList()
             .apply {
-                val newCategory = categoryData.category.copy(name = newCategoryName)
+                val newCategory = categoryData.copy(name = newCategoryName)
                 set(
                     selectedCategoryIndex,
-                    categoryData.copy(category = newCategory),
+                    newCategory,
                 )
             }
         setState {
@@ -248,10 +242,10 @@ class SettingsViewModel @Inject constructor(
 
     private fun addScreenElement() = runBlocking {
         val currentState = getState()
-        currentState.selectedCategoryWithScreenElements?.let { selectedCategory ->
+        currentState.selectedCategory?.let { selectedCategory ->
             val newScreenElements =
                 selectedCategory.screenElements.toMutableList()
-                    .apply { add(ScreenElement.getDefault(selectedCategory.category.id)) }
+                    .apply { add(ScreenElement.getDefault()) }
             val newCategories = currentState.categories.toMutableList().apply {
                 set(
                     currentState.selectedCategoryIndex!!,
@@ -271,7 +265,7 @@ class SettingsViewModel @Inject constructor(
 
     private fun removeScreenElement() = runBlocking {
         val currentState = getState()
-        currentState.selectedCategoryWithScreenElements?.let { selectedCategoryWithScreenElements ->
+        currentState.selectedCategory?.let { selectedCategoryWithScreenElements ->
             val newScreenElements = selectedCategoryWithScreenElements.screenElements
                 .toMutableList()
                 .apply {

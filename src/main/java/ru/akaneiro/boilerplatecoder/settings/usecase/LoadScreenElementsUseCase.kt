@@ -6,6 +6,6 @@ import javax.inject.Inject
 class LoadScreenElementsUseCase @Inject constructor(): SettingsUseCaseBase() {
 
     fun invoke(categoryId: Int): List<ScreenElement> {
-        return loadSettings().screenElements.filter { it.categoryId == categoryId }
+        return loadSettings().categories.find { it.id == categoryId }?.screenElements ?: listOf()
     }
 }

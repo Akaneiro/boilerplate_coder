@@ -2,7 +2,7 @@ package ru.akaneiro.boilerplatecoder.settings.ui
 
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileWrapper
-import ru.akaneiro.boilerplatecoder.model.CategoryWithScreenElements
+import ru.akaneiro.boilerplatecoder.model.Category
 import ru.akaneiro.boilerplatecoder.model.ScreenElement
 
 interface SettingsView {
@@ -28,10 +28,10 @@ interface SettingsView {
     }
 
     data class SettingsUiModel(
-        val categories: List<CategoryWithScreenElements>,
+        val categories: List<Category>,
         val selectedCategoryIndex: Int?,
         val selectedElementIndex: Int?,
-        val selectedCategoryWithScreenElements: CategoryWithScreenElements?,
+        val selectedCategory: Category?,
         val selectedElement: ScreenElement?,
         val renderedFileName: String?,
         val selectedElementTemplate: String?,

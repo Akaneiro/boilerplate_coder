@@ -5,7 +5,6 @@ import ru.akaneiro.boilerplatecoder.settings.ui.SettingsView
 import ru.akaneiro.boilerplatecoder.widget.*
 import java.awt.GridBagLayout
 import javax.swing.JLabel
-import javax.swing.JPanel
 import javax.swing.JTextField
 
 class CategoryDetailsPanel : BasePanel<SettingsView.SettingsUiModel>() {
@@ -30,8 +29,8 @@ class CategoryDetailsPanel : BasePanel<SettingsView.SettingsUiModel>() {
     }
 
     override fun performRender(model: SettingsView.SettingsUiModel) {
-        val selectedCategory = model.selectedCategoryWithScreenElements
-        nameTextField.updateText(selectedCategory?.category?.name ?: "")
+        val selectedCategory = model.selectedCategory
+        nameTextField.updateText(selectedCategory?.name ?: "")
         isEnabled = selectedCategory != null
         components.forEach { it.isEnabled = selectedCategory != null }
     }

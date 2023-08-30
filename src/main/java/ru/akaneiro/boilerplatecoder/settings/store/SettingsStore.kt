@@ -1,22 +1,22 @@
 package ru.akaneiro.boilerplatecoder.settings.store
 
-import ru.akaneiro.boilerplatecoder.model.CategoryWithScreenElements
+import ru.akaneiro.boilerplatecoder.model.Category
 import ru.akaneiro.boilerplatecoder.model.ScreenElement
 
 interface SettingsStore {
 
     interface Effect {
-        object ShowFileChooserDialog: Effect
-        object ShowFileSaverDialog: Effect
+        object ShowFileChooserDialog : Effect
+        object ShowFileSaverDialog : Effect
     }
 
     data class State(
         val isModified: Boolean = true,
-        val categories: List<CategoryWithScreenElements> = listOf(),
+        val categories: List<Category> = listOf(),
         val selectedCategoryIndex: Int? = null,
         val selectedElementIndex: Int? = null,
     ) {
-        val selectedCategoryWithScreenElements: CategoryWithScreenElements?
+        val selectedCategory: Category?
             get() = if (selectedCategoryIndex != null) {
                 categories[selectedCategoryIndex]
             } else {
@@ -24,8 +24,8 @@ interface SettingsStore {
             }
 
         val selectedElement: ScreenElement?
-            get() = if (selectedElementIndex != null && selectedCategoryWithScreenElements != null) {
-                selectedCategoryWithScreenElements!!.screenElements[selectedElementIndex]
+            get() = if (selectedElementIndex != null && selectedCategory != null) {
+                selectedCategory!!.screenElements[selectedElementIndex]
             } else {
                 null
             }
