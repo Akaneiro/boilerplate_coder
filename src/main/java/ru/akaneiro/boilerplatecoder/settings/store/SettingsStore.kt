@@ -12,7 +12,7 @@ interface SettingsStore {
     }
 
     data class State(
-        val isModified: Boolean = true,
+        val isModified: Boolean = false,
         val categories: List<Category> = listOf(),
         val selectedCategoryIndex: Int? = null,
         val selectedElementIndex: Int? = null,

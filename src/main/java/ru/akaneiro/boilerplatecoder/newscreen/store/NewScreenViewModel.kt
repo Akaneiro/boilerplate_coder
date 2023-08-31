@@ -40,7 +40,7 @@ class NewScreenViewModel @Inject constructor(
         when (action) {
             is NewScreenView.NewScreenAction.OkClicked -> {
                 currentPath?.module?.let { module ->
-                    state.value.selectedCategory?.let { selectedCategory ->
+                    getState().selectedCategory?.let { selectedCategory ->
                         runBlocking {
                             writeFilesUseCase.invoke(
                                 packageName = packageExtractor.extractFromCurrentPath(),

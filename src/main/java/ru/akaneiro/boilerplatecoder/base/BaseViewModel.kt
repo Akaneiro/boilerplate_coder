@@ -25,7 +25,7 @@ abstract class BaseViewModel<STATE : Any, EFFECT : Any, ACTION : Any> : Coroutin
     private val _effect: Channel<EFFECT> = Channel()
     val effect = _effect.receiveAsFlow()
 
-    protected fun getState() = state.value
+    fun getState() = state.value
 
     init {
         observeActions()

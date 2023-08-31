@@ -14,7 +14,7 @@ import javax.swing.ListSelectionModel
 class CategoriesPanel : BasePanel<SettingsView.SettingsUiModel>() {
 
     companion object {
-        private const val CATEGORY_TITLE_LABEL_TEXT = "Category"
+        private const val CATEGORY_TITLE_LABEL_TEXT = "Groups"
     }
 
     private val listModel = CollectionListModel<Category>()

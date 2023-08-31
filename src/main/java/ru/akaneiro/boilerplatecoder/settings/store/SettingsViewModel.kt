@@ -1,14 +1,12 @@
 package ru.akaneiro.boilerplatecoder.settings.store
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileWrapper
 import kotlinx.coroutines.runBlocking
 import ru.akaneiro.boilerplatecoder.base.BaseViewModel
-import ru.akaneiro.boilerplatecoder.model.Category
-import ru.akaneiro.boilerplatecoder.model.ScreenElement
-import ru.akaneiro.boilerplatecoder.model.Settings
+import ru.akaneiro.boilerplatecoder.model.*
 import ru.akaneiro.boilerplatecoder.settings.ui.SettingsView
 import ru.akaneiro.boilerplatecoder.settings.usecase.ApplySettingsUseCase
 import ru.akaneiro.boilerplatecoder.settings.usecase.ConvertImportSettingsFromJsonUseCase
@@ -115,13 +113,11 @@ class SettingsViewModel @Inject constructor(
 
     private fun exportSettingsToFile(result: VirtualFileWrapper) {
         runBlocking {
-            with(getState()) {
-                val settingsToExport = Settings(
-                    categories = getState().categories.toMutableList(),
-                )
-                val serialized = Gson().toJson(settingsToExport)
-                result.file.writeText(serialized)
-            }
+            val settingsToExport = Settings(
+                categories = getState().categories.toMutableList(),
+            )
+            val serialized = GsonBuilder().setPrettyPrinting().create().toJson(settingsToExport)
+            result.file.writeText(serialized)
         }
     }
 
@@ -185,17 +181,18 @@ class SettingsViewModel @Inject constructor(
     }
 
     private fun applySettings() {
-        val newSettings = state.value.run {
+        val newSettings = getState().run {
             Settings(categories = categories.toMutableList())
         }
         applySettingsUseCase.invoke(newSettings)
     }
 
     private fun addCategory() = runBlocking {
-        val newId = state.value.categories.size
-        val newCategories = state.value.categories.toMutableList()
+        val newCategories = getState().categories.toMutableList()
             .apply {
-                add(Category.getDefault(newId))
+                val unnamedCategoriesCount = this.count { it.name == DEFAULT_CATEGORY_NAME }
+                val postfix = if (unnamedCategoriesCount > 0) (unnamedCategoriesCount + 1).toString() else ""
+                add(Category.getDefault(postfix))
             }
         setState {
             copy(
@@ -210,7 +207,7 @@ class SettingsViewModel @Inject constructor(
     private fun removeCategory() = runBlocking {
         val currentState = getState()
         currentState.selectedCategoryIndex?.let {
-            val newCategories = state.value.categories
+            val newCategories = getState().categories
                 .toMutableList()
                 .apply {
                     removeAt(it)
@@ -251,7 +248,11 @@ class SettingsViewModel @Inject constructor(
         currentState.selectedCategory?.let { selectedCategory ->
             val newScreenElements =
                 selectedCategory.screenElements.toMutableList()
-                    .apply { add(ScreenElement.getDefault()) }
+                    .apply {
+                        val unnamedScreenElements = this.count { it.name == DEFAULT_SCREEN_ELEMENT_NAME }
+                        val postfix = if (unnamedScreenElements > 0) (unnamedScreenElements + 1).toString() else ""
+                        add(ScreenElement.getDefault(postfix))
+                    }
             val newCategories = currentState.categories.toMutableList().apply {
                 set(
                     currentState.selectedCategoryIndex!!,

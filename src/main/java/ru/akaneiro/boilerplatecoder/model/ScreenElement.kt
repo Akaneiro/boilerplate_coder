@@ -7,8 +7,8 @@ const val SAMPLE_PACKAGE_NAME = "com.sample"
 
 const val DEFAULT_SOURCE_SET = "main"
 
-const val DEFAULT_SCREEN_ELEMENT_NAME = "UnnamedElement"
-const val DEFAULT_SCREEN_ELEMENT_FILE_NAME = "UnnamedElementFile"
+const val DEFAULT_SCREEN_ELEMENT_NAME = "Unnamed Element"
+const val DEFAULT_SCREEN_ELEMENT_FILE_NAME = "Unnamed Element File"
 val DEFAULT_SCREEN_ELEMENT_TEMPLATE = "package ${DefaultVariable.PACKAGE_NAME.template}"
 
 data class ScreenElement(
@@ -38,8 +38,8 @@ data class ScreenElement(
     override fun toString(): String = name
 
     companion object {
-        fun getDefault() = ScreenElement(
-            name = DEFAULT_SCREEN_ELEMENT_NAME,
+        fun getDefault(categoryPostfix: String) = ScreenElement(
+            name = if (categoryPostfix.isBlank()) DEFAULT_SCREEN_ELEMENT_NAME else "$DEFAULT_SCREEN_ELEMENT_NAME $categoryPostfix",
             filenameTemplate = DEFAULT_SCREEN_ELEMENT_FILE_NAME,
             template = DEFAULT_SCREEN_ELEMENT_TEMPLATE,
             subdirectory = "",

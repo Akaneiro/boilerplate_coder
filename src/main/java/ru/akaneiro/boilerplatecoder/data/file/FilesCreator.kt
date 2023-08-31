@@ -4,12 +4,10 @@ import ru.akaneiro.boilerplatecoder.model.DEFAULT_SOURCE_SET
 import ru.akaneiro.boilerplatecoder.model.Module
 import ru.akaneiro.boilerplatecoder.data.SourceRootRepository
 import ru.akaneiro.boilerplatecoder.model.Category
-import ru.akaneiro.boilerplatecoder.settings.usecase.LoadScreenElementsUseCase
 import javax.inject.Inject
 
 class FilesCreator @Inject constructor(
     private val sourceRootRepository: SourceRootRepository,
-    private val loadScreenElementsUseCase: LoadScreenElementsUseCase,
 ) {
 
     fun createScreenFilesByCategory(
@@ -18,7 +16,7 @@ class FilesCreator @Inject constructor(
         module: Module,
         category: Category,
     ) {
-        loadScreenElementsUseCase.invoke(category.id)
+        category.screenElements
             .forEach { screenElement ->
                 val file = File(
                     name = screenElement.fileName(screenName, packageName),

@@ -10,8 +10,8 @@ import javax.swing.JTextField
 class CategoryDetailsPanel : BasePanel<SettingsView.SettingsUiModel>() {
 
     private companion object {
-        private const val CATEGORY_DETAILS_TEXT_LABEL = "Category Details"
-        private const val CATEGORY_NAME_TEXT_LABEL = "Category Name:"
+        private const val CATEGORY_DETAILS_TEXT_LABEL = "Group Details"
+        private const val CATEGORY_NAME_TEXT_LABEL = "Group Name:"
     }
 
     var onNameTextChanged: ((String) -> Unit)? = null

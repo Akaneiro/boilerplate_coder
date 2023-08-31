@@ -97,7 +97,7 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
 
     private fun showFileSaver() {
         val result = FileSaverDialogImpl(
-            FileSaverDescriptor("Test", "TEST"),
+            FileSaverDescriptor("Boilerplate Coder Export Settings", ""),
             project,
         ).save("boilerplate_coder_settings.json")
         launch {
@@ -118,7 +118,7 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
     }
 
     override fun isModified(): Boolean {
-        return if (::viewModel.isInitialized) viewModel.state.value.isModified else false
+        return if (::viewModel.isInitialized) viewModel.getState().isModified else false
     }
 
     override fun apply() {

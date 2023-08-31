@@ -14,8 +14,7 @@
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    Tired of writing boilerplate code? Let your IDE generate code for you!
   ]]></description>
 
     <depends>com.intellij.modules.lang</depends>
@@ -36,7 +35,7 @@
             <action id="NewScreenAction"
                     class="ru.akaneiro.boilerplatecoder.newscreen.NewScreenAnAction"
                     text="Boilerplate Code"
-                    description="Generate new  boilerplate code"/>
+                    description="Generate new boilerplate code"/>
         </group>
     </actions>
 
@@ -45,7 +44,8 @@
         <projectConfigurable
                 instance="ru.akaneiro.boilerplatecoder.settings.ui.SettingsScreenConfigurable">
         </projectConfigurable>
-        <applicationService serviceImplementation="ru.akaneiro.boilerplatecoder.data.ScreenGeneratorApplicationComponent" />
+        <applicationService
+                serviceImplementation="ru.akaneiro.boilerplatecoder.data.ScreenGeneratorApplicationComponent"/>
     </extensions>
 
 </idea-plugin>

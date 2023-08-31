@@ -15,14 +15,14 @@ import javax.swing.JTextField
 class NewScreenPanel : BasePanel<NewScreenView.NewScreenUiModel>() {
 
     companion object {
-        private const val NAME_LABEL_TEXT = "Name:"
-        private const val CATEGORY_LABEL_TEXT = "Category:"
+        private const val NAME_LABEL_TEXT = "Screen Name:"
+        private const val CATEGORY_LABEL_TEXT = "Group:"
         private const val MODULE_LABEL_TEXT = "Module:"
     }
 
     val nameTextField = JTextField()
-    val moduleTextField = JTextField()
-    val categoryComboBox = ComboBox<Category>()
+    private val moduleTextField = JTextField()
+    private val categoryComboBox = ComboBox<Category>()
     var onCategoryIndexChanged: ((Int) -> Unit)? = null
 
     init {
