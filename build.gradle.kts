@@ -46,9 +46,9 @@ tasks {
         kotlinOptions.jvmTarget = "11"
     }
 
-      runIde {
-        ideDir.set(file("/Users/akaneiro/Applications/Android Studio.app/Contents"))
-    }
+//      runIde {
+//        ideDir.set(file("/Users/akaneiro/Applications/Android Studio.app/Contents"))
+//    }
 
   patchPluginXml {
     sinceBuild.set("222")
