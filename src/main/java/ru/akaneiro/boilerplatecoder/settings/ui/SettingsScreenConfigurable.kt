@@ -1,9 +1,12 @@
 package ru.akaneiro.boilerplatecoder.settings.ui
 
-import com.intellij.openapi.fileChooser.*
+import com.intellij.openapi.fileChooser.FileChooser
+import com.intellij.openapi.fileChooser.FileChooserDescriptorFactory
+import com.intellij.openapi.fileChooser.FileSaverDescriptor
 import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
+import com.intellij.packageDependencies.ui.TreeModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -18,7 +21,9 @@ import ru.akaneiro.boilerplatecoder.settings.store.SettingsStore
 import ru.akaneiro.boilerplatecoder.settings.store.SettingsViewModel
 import javax.inject.Inject
 import javax.swing.JComponent
+import javax.swing.tree.DefaultMutableTreeNode
 import kotlin.coroutines.CoroutineContext
+
 
 class SettingsScreenConfigurable(private val project: Project) : Configurable, CoroutineScope {
 
@@ -78,9 +83,11 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
                     SettingsStore.Effect.ShowFileChooserDialog -> {
                         showFileChooser()
                     }
+
                     SettingsStore.Effect.ShowFileSaverDialog -> {
                         showFileSaver()
                     }
+
                     SettingsStore.Effect.ShowHelpScreen -> {
                         showHelpDialog()
                     }
@@ -128,6 +135,27 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
     override fun getDisplayName(): String = "Boilerplate Coder"
 
     private fun SettingsStore.State.toModel(): SettingsView.SettingsUiModel {
+        val treeNode = DefaultMutableTreeNode("Root").apply {
+            this@toModel.selectedCategory?.let { selectedCategory ->
+                selectedCategory.screenElements.forEach { screenElement ->
+                    var directory = this.root as DefaultMutableTreeNode
+                    screenElement.subdirectory.split("/").filter { it.isNotBlank() }.forEach { subdirectory ->
+                        val existingDirectory = directory.children().toList()
+                            .find { (it as DefaultMutableTreeNode).userObject.equals(subdirectory) }
+                        directory = if (existingDirectory != null) {
+                            existingDirectory as DefaultMutableTreeNode
+                        } else {
+                            val newSubd = DefaultMutableTreeNode(subdirectory)
+                            directory.insert(newSubd, directory.childCount)
+                            newSubd
+                        }
+                    }
+                    directory.add(DefaultMutableTreeNode(screenElement.name, false))
+                }
+            }
+        }
+        val treeModel = TreeModel(treeNode)
+        sortTree(treeModel, treeNode)
         return SettingsView.SettingsUiModel(
             categories = this.categories,
             selectedCategoryIndex = this.selectedCategoryIndex,
@@ -137,6 +165,43 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
             renderedFileName = this.selectedElement?.renderFileName(),
             selectedElementTemplate = this.selectedElement?.template,
             renderedSampleCode = this.selectedElement?.renderSampleCode(),
+            structureTreeNode = treeModel,
         )
+    }
+
+    private fun sortTree(treeModel: TreeModel, rootNode: DefaultMutableTreeNode) {
+        treeModel.reload(sort(rootNode))
+    }
+
+    private fun sort(node: DefaultMutableTreeNode): DefaultMutableTreeNode {
+        //sort alphabetically
+        for (i in 0 until node.childCount - 1) {
+            val child = node.getChildAt(i) as DefaultMutableTreeNode
+            val nt = child.userObject.toString()
+            for (j in i + 1 until node.childCount) {
+                val prevNode = node.getChildAt(j) as DefaultMutableTreeNode
+                val np = prevNode.userObject.toString()
+                if (nt.compareTo(np, ignoreCase = true) > 0) {
+                    node.insert(child, j)
+                    node.insert(prevNode, i)
+                }
+            }
+            if (child.childCount > 0) {
+                sort(child)
+            }
+        }
+
+        //put folders first - normal on Windows and some flavors of Linux but not on Mac OS X.
+        for (i in 0 until node.childCount - 1) {
+            val child = node.getChildAt(i) as DefaultMutableTreeNode
+            for (j in i + 1..node.childCount - 1) {
+                val prevNode = node.getChildAt(j) as DefaultMutableTreeNode
+                if (!prevNode.isLeaf && child.isLeaf) {
+                    node.insert(child, j)
+                    node.insert(prevNode, i)
+                }
+            }
+        }
+        return node
     }
 }

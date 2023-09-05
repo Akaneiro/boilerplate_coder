@@ -8,7 +8,6 @@ import ru.akaneiro.boilerplatecoder.model.Category
 import ru.akaneiro.boilerplatecoder.settings.ui.SettingsView
 import ru.akaneiro.boilerplatecoder.widget.BasePanel
 import java.awt.GridLayout
-import javax.swing.JPanel
 import javax.swing.ListSelectionModel
 
 class CategoriesPanel : BasePanel<SettingsView.SettingsUiModel>() {

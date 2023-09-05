@@ -4,6 +4,8 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.vfs.VirtualFileWrapper
 import ru.akaneiro.boilerplatecoder.model.Category
 import ru.akaneiro.boilerplatecoder.model.ScreenElement
+import javax.swing.tree.TreeModel
+
 
 interface SettingsView {
     sealed interface SettingsAction {
@@ -37,5 +39,6 @@ interface SettingsView {
         val renderedFileName: String?,
         val selectedElementTemplate: String?,
         val renderedSampleCode: String?,
+        val structureTreeNode: TreeModel,
     )
 }

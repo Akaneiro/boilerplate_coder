@@ -10,7 +10,6 @@ import ru.akaneiro.boilerplatecoder.widget.BasePanel
 import ru.akaneiro.boilerplatecoder.widget.addTextChangeListener
 import ru.akaneiro.boilerplatecoder.widget.updateText
 import java.awt.Dimension
-import java.awt.GridLayout
 import javax.swing.BoxLayout
 import javax.swing.JPanel
 
@@ -26,7 +25,7 @@ class CodePanel(private val project: Project) : BasePanel<SettingsView.SettingsU
     private val sampleTextField = createSampleTextField()
 
     init {
-        layout = GridLayout(2, 1)
+        layout = BoxLayout(this, BoxLayout.Y_AXIS)
         val templatePanel = createTemplatePanel()
         val samplePanel = createSamplePanel()
         add(templatePanel)

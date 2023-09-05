@@ -12,8 +12,8 @@ data class Category(
     override fun toString() = name
 
     companion object {
-        fun getDefault(categoryPostfix: String) = Category(
-            name = if (categoryPostfix.isBlank()) DEFAULT_CATEGORY_NAME else "$DEFAULT_CATEGORY_NAME $categoryPostfix",
+        fun getDefault() = Category(
+            name = DEFAULT_CATEGORY_NAME,
             screenElements = mutableListOf(),
         )
     }

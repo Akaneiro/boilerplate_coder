@@ -1,17 +1,14 @@
 package ru.akaneiro.boilerplatecoder.settings.ui
 
 import com.intellij.openapi.project.Project
-import com.intellij.ui.IdeBorderFactory
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.labels.LinkLabel
 import ru.akaneiro.boilerplatecoder.settings.ui.widget.*
 import java.awt.BorderLayout
-import java.awt.Dimension
 import java.awt.FlowLayout
 import javax.swing.BoxLayout
 import javax.swing.JPanel
 import javax.swing.JSeparator
-import javax.swing.JToolBar.Separator
 import javax.swing.SwingConstants
 
 class SettingsScreenPanel(project: Project) : JPanel() {
@@ -41,25 +38,24 @@ class SettingsScreenPanel(project: Project) : JPanel() {
             add(LinkLabel.create(HELP_LABEL_TEXT) { onHelpClick?.invoke() })
         }
         val mainPanel = JPanel().apply {
-            layout = BoxLayout(this, BoxLayout.Y_AXIS)
-            add(
-                JBSplitter(0.3f).apply {
-                    firstComponent = categoriesPanel
-                    secondComponent = categoryDetailsPanel
-                }
-            )
-            add(
-                JBSplitter(0.3f).apply {
-                    firstComponent = screenElementsPanel
-                    secondComponent = screenElementDetailsPanel
-                }
-            )
-            add(
-                JPanel().apply {
-                    layout = BoxLayout(this, BoxLayout.Y_AXIS)
-                    add(codePanel)
-                }
-            )
+            layout = BorderLayout()
+            val contentPanel = JPanel().apply {
+                layout = BoxLayout(this, BoxLayout.Y_AXIS)
+                add(
+                    JBSplitter(0.5f).apply {
+                        firstComponent = categoriesPanel
+                        secondComponent = categoryDetailsPanel
+                    }
+                )
+                add(
+                    JBSplitter(0.5f).apply {
+                        firstComponent = screenElementsPanel
+                        secondComponent = screenElementDetailsPanel
+                    }
+                )
+                add(codePanel)
+            }
+            add(contentPanel)
         }
         add(importSettingsPanel, BorderLayout.PAGE_START)
         add(mainPanel, BorderLayout.CENTER)

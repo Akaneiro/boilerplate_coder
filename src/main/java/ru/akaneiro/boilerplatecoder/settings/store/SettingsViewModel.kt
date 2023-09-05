@@ -190,9 +190,7 @@ class SettingsViewModel @Inject constructor(
     private fun addCategory() = runBlocking {
         val newCategories = getState().categories.toMutableList()
             .apply {
-                val unnamedCategoriesCount = this.count { it.name == DEFAULT_CATEGORY_NAME }
-                val postfix = if (unnamedCategoriesCount > 0) (unnamedCategoriesCount + 1).toString() else ""
-                add(Category.getDefault(postfix))
+                add(Category.getDefault())
             }
         setState {
             copy(
@@ -249,9 +247,7 @@ class SettingsViewModel @Inject constructor(
             val newScreenElements =
                 selectedCategory.screenElements.toMutableList()
                     .apply {
-                        val unnamedScreenElements = this.count { it.name == DEFAULT_SCREEN_ELEMENT_NAME }
-                        val postfix = if (unnamedScreenElements > 0) (unnamedScreenElements + 1).toString() else ""
-                        add(ScreenElement.getDefault(postfix))
+                        add(ScreenElement.getDefault())
                     }
             val newCategories = currentState.categories.toMutableList().apply {
                 set(

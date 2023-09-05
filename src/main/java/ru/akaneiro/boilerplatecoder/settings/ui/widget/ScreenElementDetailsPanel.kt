@@ -1,11 +1,13 @@
 package ru.akaneiro.boilerplatecoder.settings.ui.widget
 
 import com.intellij.ui.IdeBorderFactory
+import org.jdesktop.swingx.VerticalLayout
 import ru.akaneiro.boilerplatecoder.settings.ui.SettingsView
-import ru.akaneiro.boilerplatecoder.widget.*
-import java.awt.GridBagLayout
+import ru.akaneiro.boilerplatecoder.widget.BasePanel
+import ru.akaneiro.boilerplatecoder.widget.addTextChangeListener
+import ru.akaneiro.boilerplatecoder.widget.updateText
+import javax.swing.JComponent
 import javax.swing.JLabel
-import javax.swing.JPanel
 import javax.swing.JTextField
 
 class ScreenElementDetailsPanel : BasePanel<SettingsView.SettingsUiModel>() {
@@ -36,17 +38,19 @@ class ScreenElementDetailsPanel : BasePanel<SettingsView.SettingsUiModel>() {
     private val subdirectoryLabel = JLabel(SUBDIRECTORY_LABEL_TEXT)
     private val subdirectoryTextField = JTextField()
 
+    private val fieldsList: List<Pair<JComponent, JComponent>> = listOf(
+        screenElementNameLabel to nameTextField,
+        fileNameLabel to fileNameTextField,
+        fileNamePreviewLabel to fileNamePreview,
+        subdirectoryLabel to subdirectoryTextField,
+    )
+
     init {
         border = IdeBorderFactory.createTitledBorder(ELEMENT_DETAILS_LABEL_TEXT, false)
-        layout = GridBagLayout()
-        add(screenElementNameLabel, constraintsLeft(0, 0))
-        add(nameTextField, constraintsRight(1, 0))
-        add(fileNameLabel, constraintsLeft(0, 1))
-        add(fileNamePreviewLabel, constraintsLeft(0, 2))
-        add(fileNamePreview, constraintsRight(1, 2))
-        add(fileNameTextField, constraintsRight(1, 1))
-        add(subdirectoryLabel, constraintsLeft(0, 4))
-        add(subdirectoryTextField, constraintsRight(1, 4))
+        layout = VerticalLayout()
+        fieldsList.forEach {
+            add(createDetailComponent(it.first, it.second))
+        }
 
         nameTextField.addTextChangeListener { if (!listenersBlocked) onNameTextChanged?.invoke(it) }
         fileNameTextField.addTextChangeListener { if (!listenersBlocked) onFileNameTextChanged?.invoke(it) }
@@ -60,8 +64,13 @@ class ScreenElementDetailsPanel : BasePanel<SettingsView.SettingsUiModel>() {
         fileNamePreview.updateText(model.renderedFileName ?: "")
         subdirectoryTextField.updateText(selectedElement?.subdirectory ?: "")
 
-        isEnabled = selectedElement != null
-        components.filter { it != fileNamePreview && it != fileNamePreviewLabel }
-            .forEach { it.isEnabled = selectedElement != null }
+        fieldsList.forEach {
+            it.first.isEnabled = selectedElement != null
+            it.second.isEnabled = selectedElement != null
+        }
+        fieldsList.firstOrNull { it.first == fileNamePreviewLabel }?.let {
+            it.first.isEnabled = false
+            it.second.isEnabled = false
+        }
     }
 }

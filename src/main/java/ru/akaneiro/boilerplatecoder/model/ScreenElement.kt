@@ -38,8 +38,8 @@ data class ScreenElement(
     override fun toString(): String = name
 
     companion object {
-        fun getDefault(categoryPostfix: String) = ScreenElement(
-            name = if (categoryPostfix.isBlank()) DEFAULT_SCREEN_ELEMENT_NAME else "$DEFAULT_SCREEN_ELEMENT_NAME $categoryPostfix",
+        fun getDefault() = ScreenElement(
+            name = DEFAULT_SCREEN_ELEMENT_NAME,
             filenameTemplate = DEFAULT_SCREEN_ELEMENT_FILE_NAME,
             template = DEFAULT_SCREEN_ELEMENT_TEMPLATE,
             subdirectory = "",
