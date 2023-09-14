@@ -10,7 +10,7 @@ import ru.akaneiro.boilerplatecoder.widget.BasePanel
 import java.awt.GridLayout
 import javax.swing.ListSelectionModel
 
-class CategoriesPanel : BasePanel<SettingsView.SettingsUiModel>() {
+class CategoriesListPanel : BasePanel<SettingsView.SettingsUiModel>() {
 
     companion object {
         private const val CATEGORY_TITLE_LABEL_TEXT = "Groups"

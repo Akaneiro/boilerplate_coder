@@ -17,7 +17,8 @@ class ScreenGeneratorApplicationComponent :
     Serializable {
 
     companion object {
-        fun getInstance() = ServiceManager.getService(ScreenGeneratorApplicationComponent::class.java)
+        fun getInstance(): ScreenGeneratorApplicationComponent =
+            ServiceManager.getService(ScreenGeneratorApplicationComponent::class.java)
     }
 
     var settings: Settings = Settings()

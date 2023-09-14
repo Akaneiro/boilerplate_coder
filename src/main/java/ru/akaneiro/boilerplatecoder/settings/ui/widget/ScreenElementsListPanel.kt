@@ -10,7 +10,7 @@ import ru.akaneiro.boilerplatecoder.widget.BasePanel
 import java.awt.GridLayout
 import javax.swing.ListSelectionModel
 
-class ScreenElementsPanel : BasePanel<SettingsView.SettingsUiModel>() {
+class ScreenElementsListPanel : BasePanel<SettingsView.SettingsUiModel>() {
 
     companion object {
         private const val ELEMENTS_LABEL_TEXT = "Elements"

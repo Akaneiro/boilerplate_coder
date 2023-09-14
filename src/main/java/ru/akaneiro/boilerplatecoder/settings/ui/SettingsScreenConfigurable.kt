@@ -45,7 +45,7 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
             onHelpClick = { viewModel.setAction(SettingsView.SettingsAction.HelpClicked) }
         }
 
-        with(panel.categoriesPanel) {
+        with(panel.categoriesListPanel) {
             onAddClicked = { viewModel.setAction(SettingsView.SettingsAction.AddCategory) }
             onRemoveClicked = { viewModel.setAction(SettingsView.SettingsAction.RemoveCategory) }
             onItemSelected = { viewModel.setAction(SettingsView.SettingsAction.SelectCategory(it)) }
@@ -55,7 +55,7 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
             onNameTextChanged = { viewModel.setAction(SettingsView.SettingsAction.ChangeCategoryName(it)) }
         }
 
-        with(panel.screenElementsPanel) {
+        with(panel.screenElementsListPanel) {
             onAddClicked = { viewModel.setAction(SettingsView.SettingsAction.AddScreenElement) }
             onItemSelected = { viewModel.setAction(SettingsView.SettingsAction.SelectScreenElement(it)) }
             onRemoveClicked = { viewModel.setAction(SettingsView.SettingsAction.RemoveScreenElement) }
@@ -194,7 +194,7 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
         //put folders first - normal on Windows and some flavors of Linux but not on Mac OS X.
         for (i in 0 until node.childCount - 1) {
             val child = node.getChildAt(i) as DefaultMutableTreeNode
-            for (j in i + 1..node.childCount - 1) {
+            for (j in i + 1 until node.childCount) {
                 val prevNode = node.getChildAt(j) as DefaultMutableTreeNode
                 if (!prevNode.isLeaf && child.isLeaf) {
                     node.insert(child, j)

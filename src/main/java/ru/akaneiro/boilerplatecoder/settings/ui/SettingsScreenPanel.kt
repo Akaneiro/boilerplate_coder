@@ -3,10 +3,11 @@ package ru.akaneiro.boilerplatecoder.settings.ui
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBSplitter
 import com.intellij.ui.components.labels.LinkLabel
+import org.jdesktop.swingx.VerticalLayout
 import ru.akaneiro.boilerplatecoder.settings.ui.widget.*
 import java.awt.BorderLayout
+import java.awt.Dimension
 import java.awt.FlowLayout
-import javax.swing.BoxLayout
 import javax.swing.JPanel
 import javax.swing.JSeparator
 import javax.swing.SwingConstants
@@ -19,9 +20,9 @@ class SettingsScreenPanel(project: Project) : JPanel() {
         private const val HELP_LABEL_TEXT = "Help"
     }
 
-    val categoriesPanel = CategoriesPanel()
+    val categoriesListPanel = CategoriesListPanel()
     val categoryDetailsPanel = CategoryDetailsPanel()
-    val screenElementsPanel = ScreenElementsPanel()
+    val screenElementsListPanel = ScreenElementsListPanel()
     val screenElementDetailsPanel = ScreenElementDetailsPanel()
     val codePanel = CodePanel(project)
 
@@ -40,16 +41,16 @@ class SettingsScreenPanel(project: Project) : JPanel() {
         val mainPanel = JPanel().apply {
             layout = BorderLayout()
             val contentPanel = JPanel().apply {
-                layout = BoxLayout(this, BoxLayout.Y_AXIS)
+                layout = VerticalLayout()
                 add(
                     JBSplitter(0.5f).apply {
-                        firstComponent = categoriesPanel
+                        firstComponent = categoriesListPanel
                         secondComponent = categoryDetailsPanel
                     }
                 )
                 add(
                     JBSplitter(0.5f).apply {
-                        firstComponent = screenElementsPanel
+                        firstComponent = screenElementsListPanel
                         secondComponent = screenElementDetailsPanel
                     }
                 )
@@ -62,10 +63,15 @@ class SettingsScreenPanel(project: Project) : JPanel() {
     }
 
     fun render(state: SettingsView.SettingsUiModel) {
-        categoriesPanel.render(state)
+        categoriesListPanel.render(state)
         categoryDetailsPanel.render(state)
-        screenElementsPanel.render(state)
+        screenElementsListPanel.render(state)
         screenElementDetailsPanel.render(state)
         codePanel.render(state)
+    }
+
+    override fun getPreferredSize(): Dimension {
+        val original = super.getPreferredSize()
+        return Dimension(600, original.height)
     }
 }
