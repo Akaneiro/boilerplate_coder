@@ -11,6 +11,7 @@ import ru.akaneiro.boilerplatecoder.settings.ui.SettingsView
 import ru.akaneiro.boilerplatecoder.settings.usecase.ApplySettingsUseCase
 import ru.akaneiro.boilerplatecoder.settings.usecase.ConvertImportSettingsFromJsonUseCase
 import ru.akaneiro.boilerplatecoder.settings.usecase.LoadCategoriesWithScreenElementsUseCase
+import ru.akaneiro.boilerplatecoder.widget.swap
 import javax.inject.Inject
 
 class SettingsViewModel @Inject constructor(
@@ -37,6 +38,9 @@ class SettingsViewModel @Inject constructor(
             SettingsView.SettingsAction.RemoveCategory -> removeCategory()
             is SettingsView.SettingsAction.SelectCategory -> selectCategory(action.categoryIndex)
             is SettingsView.SettingsAction.ChangeCategoryName -> renameCategory(action.newCategoryName)
+            is SettingsView.SettingsAction.MoveUpCategory -> moveUpCategory(action.categoryIndex)
+            is SettingsView.SettingsAction.MoveDownCategory -> moveDownCategory(action.categoryIndex)
+
             SettingsView.SettingsAction.AddScreenElement -> addScreenElement()
             is SettingsView.SettingsAction.SelectScreenElement -> {
                 setState {
@@ -60,6 +64,14 @@ class SettingsViewModel @Inject constructor(
 
             is SettingsView.SettingsAction.ChangeScreenElementFilename -> {
                 changeScreenElementFilename(action.newFilename)
+            }
+
+            is SettingsView.SettingsAction.MoveUpScreenElement -> {
+                moveUpScreenElement(action.elementIndex)
+            }
+
+            is SettingsView.SettingsAction.MoveDownScreenElement -> {
+                moveDownScreenElement(action.elementIndex)
             }
 
             SettingsView.SettingsAction.ImportSettingsClicked -> {
@@ -180,6 +192,62 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    private fun moveUpScreenElement(screenElementIndex: Int) = runBlocking {
+        val currentState = getState()
+        currentState.selectedCategory?.let { selectedCategoryWithScreenElements ->
+            if (screenElementIndex > 0) {
+                val newScreenElements = selectedCategoryWithScreenElements.screenElements
+                    .toMutableList()
+                    .apply {
+                        swap(screenElementIndex, screenElementIndex - 1)
+                    }
+                val newCategories = currentState.categories
+                    .toMutableList()
+                    .apply {
+                        set(
+                            currentState.selectedCategoryIndex!!,
+                            selectedCategoryWithScreenElements.copy(screenElements = newScreenElements)
+                        )
+                    }
+                setState {
+                    copy(
+                        isModified = true,
+                        categories = newCategories,
+                        selectedElementIndex = screenElementIndex - 1,
+                    )
+                }
+            }
+        }
+    }
+
+    private fun moveDownScreenElement(screenElementIndex: Int) = runBlocking {
+        val currentState = getState()
+        currentState.selectedCategory?.let { selectedCategoryWithScreenElements ->
+            if (screenElementIndex < selectedCategoryWithScreenElements.screenElements.lastIndex) {
+                val newScreenElements = selectedCategoryWithScreenElements.screenElements
+                    .toMutableList()
+                    .apply {
+                        swap(screenElementIndex, screenElementIndex + 1)
+                    }
+                val newCategories = currentState.categories
+                    .toMutableList()
+                    .apply {
+                        set(
+                            currentState.selectedCategoryIndex!!,
+                            selectedCategoryWithScreenElements.copy(screenElements = newScreenElements)
+                        )
+                    }
+                setState {
+                    copy(
+                        isModified = true,
+                        categories = newCategories,
+                        selectedElementIndex = screenElementIndex + 1,
+                    )
+                }
+            }
+        }
+    }
+
     private fun applySettings() {
         val newSettings = getState().run {
             Settings(categories = categories.toMutableList())
@@ -238,6 +306,38 @@ class SettingsViewModel @Inject constructor(
                 categories = newCategories,
                 isModified = true,
             )
+        }
+    }
+
+    private fun moveUpCategory(categoryIndex: Int) = runBlocking {
+        val currentState = getState()
+        if (categoryIndex > 0) {
+            val newCategories = currentState.categories
+                .toMutableList()
+                .apply { swap(categoryIndex, categoryIndex - 1) }
+            setState {
+                copy(
+                    categories = newCategories,
+                    isModified = true,
+                    selectedCategoryIndex = categoryIndex - 1,
+                )
+            }
+        }
+    }
+
+    private fun moveDownCategory(categoryIndex: Int) = runBlocking {
+        val currentState = getState()
+        if (categoryIndex < currentState.categories.lastIndex) {
+            val newCategories = currentState.categories
+                .toMutableList()
+                .apply { swap(categoryIndex, categoryIndex + 1) }
+            setState {
+                copy(
+                    categories = newCategories,
+                    isModified = true,
+                    selectedCategoryIndex = categoryIndex + 1,
+                )
+            }
         }
     }
 

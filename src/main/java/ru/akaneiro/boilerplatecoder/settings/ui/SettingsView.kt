@@ -14,6 +14,8 @@ interface SettingsView {
         object RemoveCategory : SettingsAction
         data class SelectCategory(val categoryIndex: Int) : SettingsAction
         data class ChangeCategoryName(val newCategoryName: String) : SettingsAction
+        data class MoveUpCategory(val categoryIndex: Int): SettingsAction
+        data class MoveDownCategory(val categoryIndex: Int): SettingsAction
 
         object AddScreenElement : SettingsAction
         object RemoveScreenElement : SettingsAction
@@ -22,6 +24,8 @@ interface SettingsView {
         data class ChangeScreenElementFilename(val newFilename: String) : SettingsAction
         data class ChangeScreenElementSubdirectory(val subdirectory: String) : SettingsAction
         data class UpdateScreenElementTemplate(val template: String) : SettingsAction
+        data class MoveUpScreenElement(val elementIndex: Int): SettingsAction
+        data class MoveDownScreenElement(val elementIndex: Int): SettingsAction
 
         object ImportSettingsClicked : SettingsAction
         object ExportSettingsClicked : SettingsAction

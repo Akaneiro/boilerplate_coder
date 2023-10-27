@@ -49,6 +49,8 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
             onAddClicked = { viewModel.setAction(SettingsView.SettingsAction.AddCategory) }
             onRemoveClicked = { viewModel.setAction(SettingsView.SettingsAction.RemoveCategory) }
             onItemSelected = { viewModel.setAction(SettingsView.SettingsAction.SelectCategory(it)) }
+            onMoveDownClicked = { viewModel.setAction(SettingsView.SettingsAction.MoveDownCategory(it)) }
+            onMoveUpClicked = { viewModel.setAction(SettingsView.SettingsAction.MoveUpCategory(it)) }
         }
 
         with(panel.categoryDetailsPanel) {
@@ -59,6 +61,8 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
             onAddClicked = { viewModel.setAction(SettingsView.SettingsAction.AddScreenElement) }
             onItemSelected = { viewModel.setAction(SettingsView.SettingsAction.SelectScreenElement(it)) }
             onRemoveClicked = { viewModel.setAction(SettingsView.SettingsAction.RemoveScreenElement) }
+            onMoveUpClicked = { viewModel.setAction(SettingsView.SettingsAction.MoveUpScreenElement(it)) }
+            onMoveDownClicked = { viewModel.setAction(SettingsView.SettingsAction.MoveDownScreenElement(it)) }
         }
 
         with(panel.screenElementDetailsPanel) {
