@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "boilerplatecoder"
-version = "1.1.2"
+version = "1.1.2.2"
 
 repositories {
     mavenCentral()
@@ -30,10 +30,10 @@ configurations {
 // Configure Gradle IntelliJ Plugin
 // Read more: https://plugins.jetbrains.com/docs/intellij/tools-gradle-intellij-plugin.html
 intellij {
-    version.set("2022.2.5")
-//    version.set("2022.1.4")
+    version.set("2022.1.4")
 //    type.set("IC") // Target IDE Platform
     plugins.set(listOf("org.jetbrains.kotlin"))
+    intellij.updateSinceUntilBuild.set(false)
 }
 
 tasks {
@@ -48,11 +48,11 @@ tasks {
 
 //      runIde {
 //        ideDir.set(file("/Users/akaneiro/Applications/Android Studio.app/Contents"))
+//        ideDir.set(file("/Users/akaneiro/Applications/IntelliJ IDEA Community Edition.app/Contents"))
 //    }
 
   patchPluginXml {
-    sinceBuild.set("222")
-    untilBuild.set("232.*")
+    sinceBuild.set("221")
   }
 
 //  signPlugin {
@@ -61,9 +61,9 @@ tasks {
 //    password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
 //  }
 
-//    runPluginVerifier {
-//        ideVersions.set(listOf("IU-182.5262.2"))
-//    }
+    runPluginVerifier {
+        ideVersions.set(listOf("IU-182.5262.2"))
+    }
 
 //  publishPlugin {
 //    token.set(System.getenv("PUBLISH_TOKEN"))
