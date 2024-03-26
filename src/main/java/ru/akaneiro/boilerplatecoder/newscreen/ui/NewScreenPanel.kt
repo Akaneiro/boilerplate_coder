@@ -1,6 +1,7 @@
 package ru.akaneiro.boilerplatecoder.newscreen.ui
 
 import com.intellij.openapi.ui.ComboBox
+import com.intellij.ui.IdeBorderFactory
 import org.jdesktop.swingx.VerticalLayout
 import ru.akaneiro.boilerplatecoder.model.Category
 import ru.akaneiro.boilerplatecoder.model.ScreenElement
@@ -8,6 +9,7 @@ import ru.akaneiro.boilerplatecoder.widget.BasePanel
 import ru.akaneiro.boilerplatecoder.widget.addTextChangeListener
 import ru.akaneiro.boilerplatecoder.widget.updateText
 import java.awt.Dimension
+import java.awt.GridLayout
 import java.awt.event.MouseAdapter
 import java.awt.event.MouseEvent
 import javax.swing.*
@@ -17,6 +19,7 @@ class NewScreenPanel : BasePanel<NewScreenView.NewScreenUiModel>() {
     companion object {
         private const val NAME_LABEL_TEXT = "Screen Name:"
         private const val CATEGORY_LABEL_TEXT = "Group:"
+        private const val ELEMENTS_LABEL_TEXT = "Elements:"
     }
 
     private val nameTextField = JTextField()
@@ -36,7 +39,14 @@ class NewScreenPanel : BasePanel<NewScreenView.NewScreenUiModel>() {
         viewFields.forEach {
             add(createDetailComponent(it.first, it.second))
         }
-        add(screenElementsList.apply {
+        add(
+            JPanel().apply {
+                border = IdeBorderFactory.createTitledBorder(ELEMENTS_LABEL_TEXT, false)
+                layout = GridLayout(1, 1)
+                add(screenElementsList)
+            }
+        )
+        screenElementsList.apply {
             cellRenderer = CheckboxListRenderer()
             selectionMode = ListSelectionModel.SINGLE_SELECTION
             addMouseListener(object : MouseAdapter() {
@@ -47,7 +57,7 @@ class NewScreenPanel : BasePanel<NewScreenView.NewScreenUiModel>() {
                     onScreenElementClick?.invoke(item.screenElement)
                 }
             })
-        })
+        }
         categoryComboBox.addActionListener {
             if (!listenersBlocked) {
                 onCategoryIndexChanged?.invoke(categoryComboBox.selectedIndex)
