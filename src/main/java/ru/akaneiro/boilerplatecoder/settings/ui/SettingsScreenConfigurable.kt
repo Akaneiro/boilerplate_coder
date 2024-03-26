@@ -7,7 +7,6 @@ import com.intellij.openapi.fileChooser.ex.FileSaverDialogImpl
 import com.intellij.openapi.options.Configurable
 import com.intellij.openapi.project.Project
 import com.intellij.packageDependencies.ui.TreeModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collect
@@ -19,13 +18,14 @@ import ru.akaneiro.boilerplatecoder.model.renderSampleCode
 import ru.akaneiro.boilerplatecoder.settings.di.DaggerSettingsScreenComponent
 import ru.akaneiro.boilerplatecoder.settings.store.SettingsStore
 import ru.akaneiro.boilerplatecoder.settings.store.SettingsViewModel
+import ru.akaneiro.boilerplatecoder.widget.ViewModelScreen
 import javax.inject.Inject
 import javax.swing.JComponent
 import javax.swing.tree.DefaultMutableTreeNode
 import kotlin.coroutines.CoroutineContext
 
-
-class SettingsScreenConfigurable(private val project: Project) : Configurable, CoroutineScope {
+class SettingsScreenConfigurable(private val project: Project) : Configurable,
+    ViewModelScreen<SettingsStore.State, SettingsStore.Effect, SettingsView.SettingsAction, SettingsViewModel> {
 
     private val job = SupervisorJob()
     override val coroutineContext: CoroutineContext = Dispatchers.UI + job
@@ -33,47 +33,46 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
     private lateinit var panel: SettingsScreenPanel
 
     @Inject
-    lateinit var viewModel: SettingsViewModel
+    override lateinit var viewModel: SettingsViewModel
 
     override fun createComponent(): JComponent {
         DaggerSettingsScreenComponent.factory().create(project).inject(this)
         panel = SettingsScreenPanel(project)
 
         with(panel) {
-            onImportSettingsClick = { viewModel.setAction(SettingsView.SettingsAction.ImportSettingsClicked) }
-            onExportSettingsClick = { viewModel.setAction(SettingsView.SettingsAction.ExportSettingsClicked) }
-            onHelpClick = { viewModel.setAction(SettingsView.SettingsAction.HelpClicked) }
+            onImportSettingsClick = { setAction(SettingsView.SettingsAction.ImportSettingsClicked) }
+            onExportSettingsClick = { setAction(SettingsView.SettingsAction.ExportSettingsClicked) }
+            onHelpClick = { setAction(SettingsView.SettingsAction.HelpClicked) }
         }
 
         with(panel.categoriesListPanel) {
-            onAddClicked = { viewModel.setAction(SettingsView.SettingsAction.AddCategory) }
-            onRemoveClicked = { viewModel.setAction(SettingsView.SettingsAction.RemoveCategory) }
-            onItemSelected = { viewModel.setAction(SettingsView.SettingsAction.SelectCategory(it)) }
-            onMoveDownClicked = { viewModel.setAction(SettingsView.SettingsAction.MoveDownCategory(it)) }
-            onMoveUpClicked = { viewModel.setAction(SettingsView.SettingsAction.MoveUpCategory(it)) }
+            onAddClicked = { setAction(SettingsView.SettingsAction.AddCategory) }
+            onRemoveClicked = { setAction(SettingsView.SettingsAction.RemoveCategory) }
+            onItemSelected = { setAction(SettingsView.SettingsAction.SelectCategory(it)) }
+            onMoveDownClicked = { setAction(SettingsView.SettingsAction.MoveDownCategory(it)) }
+            onMoveUpClicked = { setAction(SettingsView.SettingsAction.MoveUpCategory(it)) }
         }
 
         with(panel.categoryDetailsPanel) {
-            onNameTextChanged = { viewModel.setAction(SettingsView.SettingsAction.ChangeCategoryName(it)) }
+            onNameTextChanged = { setAction(SettingsView.SettingsAction.ChangeCategoryName(it)) }
         }
 
         with(panel.screenElementsListPanel) {
-            onAddClicked = { viewModel.setAction(SettingsView.SettingsAction.AddScreenElement) }
-            onItemSelected = { viewModel.setAction(SettingsView.SettingsAction.SelectScreenElement(it)) }
-            onRemoveClicked = { viewModel.setAction(SettingsView.SettingsAction.RemoveScreenElement) }
-            onMoveUpClicked = { viewModel.setAction(SettingsView.SettingsAction.MoveUpScreenElement(it)) }
-            onMoveDownClicked = { viewModel.setAction(SettingsView.SettingsAction.MoveDownScreenElement(it)) }
+            onAddClicked = { setAction(SettingsView.SettingsAction.AddScreenElement) }
+            onItemSelected = { setAction(SettingsView.SettingsAction.SelectScreenElement(it)) }
+            onRemoveClicked = { setAction(SettingsView.SettingsAction.RemoveScreenElement) }
+            onMoveUpClicked = { setAction(SettingsView.SettingsAction.MoveUpScreenElement(it)) }
+            onMoveDownClicked = { setAction(SettingsView.SettingsAction.MoveDownScreenElement(it)) }
         }
 
         with(panel.screenElementDetailsPanel) {
-            onNameTextChanged = { viewModel.setAction(SettingsView.SettingsAction.RenameScreenElement(it)) }
-            onSubdirectoryTextChanged =
-                { viewModel.setAction(SettingsView.SettingsAction.ChangeScreenElementSubdirectory(it)) }
-            onFileNameTextChanged = { viewModel.setAction(SettingsView.SettingsAction.ChangeScreenElementFilename(it)) }
+            onNameTextChanged = { setAction(SettingsView.SettingsAction.RenameScreenElement(it)) }
+            onSubdirectoryTextChanged = { setAction(SettingsView.SettingsAction.ChangeScreenElementSubdirectory(it)) }
+            onFileNameTextChanged = { setAction(SettingsView.SettingsAction.ChangeScreenElementFilename(it)) }
         }
 
         with(panel.codePanel) {
-            onTemplateTextChanged = { viewModel.setAction(SettingsView.SettingsAction.UpdateScreenElementTemplate(it)) }
+            onTemplateTextChanged = { setAction(SettingsView.SettingsAction.UpdateScreenElementTemplate(it)) }
         }
 
         launch {
@@ -112,7 +111,7 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
             project,
         ).save("boilerplate_coder_settings.json")
         launch {
-            viewModel.setAction(SettingsView.SettingsAction.ExportFileResult(result))
+            setAction(SettingsView.SettingsAction.ExportFileResult(result))
         }
     }
 
@@ -123,7 +122,7 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
             null,
         ) { virtualFile ->
             launch {
-                viewModel.setAction(SettingsView.SettingsAction.SettingsFileChosen(virtualFile))
+                setAction(SettingsView.SettingsAction.SettingsFileChosen(virtualFile))
             }
         }
     }
@@ -133,7 +132,7 @@ class SettingsScreenConfigurable(private val project: Project) : Configurable, C
     }
 
     override fun apply() {
-        launch { viewModel.setAction(SettingsView.SettingsAction.ApplySettings) }
+        launch { setAction(SettingsView.SettingsAction.ApplySettings) }
     }
 
     override fun getDisplayName(): String = "Boilerplate Coder"

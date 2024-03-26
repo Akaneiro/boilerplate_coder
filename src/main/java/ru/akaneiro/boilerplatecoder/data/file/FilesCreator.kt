@@ -3,7 +3,7 @@ package ru.akaneiro.boilerplatecoder.data.file
 import ru.akaneiro.boilerplatecoder.model.DEFAULT_SOURCE_SET
 import ru.akaneiro.boilerplatecoder.model.Module
 import ru.akaneiro.boilerplatecoder.data.SourceRootRepository
-import ru.akaneiro.boilerplatecoder.model.Category
+import ru.akaneiro.boilerplatecoder.model.ScreenElement
 import javax.inject.Inject
 
 class FilesCreator @Inject constructor(
@@ -14,9 +14,9 @@ class FilesCreator @Inject constructor(
         packageName: String,
         screenName: String,
         module: Module,
-        category: Category,
+        screenElements: List<ScreenElement>,
     ) {
-        category.screenElements
+        screenElements
             .forEach { screenElement ->
                 val file = File(
                     name = screenElement.fileName(screenName, packageName),

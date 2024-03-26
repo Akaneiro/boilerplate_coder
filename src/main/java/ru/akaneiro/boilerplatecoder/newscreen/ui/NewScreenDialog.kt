@@ -2,7 +2,6 @@ package ru.akaneiro.boilerplatecoder.newscreen.ui
 
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogWrapper
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.collect
@@ -13,14 +12,16 @@ import ru.akaneiro.boilerplatecoder.data.file.CurrentPath
 import ru.akaneiro.boilerplatecoder.newscreen.di.DaggerNewScreenComponent
 import ru.akaneiro.boilerplatecoder.newscreen.store.NewScreenStore
 import ru.akaneiro.boilerplatecoder.newscreen.store.NewScreenViewModel
+import ru.akaneiro.boilerplatecoder.widget.ViewModelScreen
 import javax.inject.Inject
 import javax.swing.JComponent
 import kotlin.coroutines.CoroutineContext
 
-class NewScreenDialog(project: Project, currentPath: CurrentPath?) : DialogWrapper(true), CoroutineScope {
+class NewScreenDialog(project: Project, currentPath: CurrentPath?) : DialogWrapper(true),
+    ViewModelScreen<NewScreenStore.State, NewScreenStore.Effect, NewScreenView.NewScreenAction, NewScreenViewModel> {
 
     @Inject
-    lateinit var viewModel: NewScreenViewModel
+    override lateinit var viewModel: NewScreenViewModel
 
     private val job = SupervisorJob()
     private val panel = NewScreenPanel()
@@ -32,6 +33,8 @@ class NewScreenDialog(project: Project, currentPath: CurrentPath?) : DialogWrapp
         launch {
             viewModel.state.map { it.toUiModel() }.collect {
                 panel.render(it)
+                isOKActionEnabled = it.okButtonActive
+                title = "Creating elements in module [${it.selectedModuleName}]"
             }
         }
         launch {
@@ -40,7 +43,13 @@ class NewScreenDialog(project: Project, currentPath: CurrentPath?) : DialogWrapp
             }
         }
         panel.onCategoryIndexChanged = {
-            viewModel.setAction(NewScreenView.NewScreenAction.SelectCategory(it))
+            setAction(NewScreenView.NewScreenAction.SelectCategory(it))
+        }
+        panel.onScreenNameTextChanged = {
+            setAction(NewScreenView.NewScreenAction.ScreenNameChanged(it))
+        }
+        panel.onScreenElementClick = {
+            setAction(NewScreenView.NewScreenAction.ScreenElementClick(it))
         }
         init()
     }
@@ -50,6 +59,9 @@ class NewScreenDialog(project: Project, currentPath: CurrentPath?) : DialogWrapp
             selectedModuleName = this.selectedModule?.nameWithoutPrefix,
             selectedCategory = this.selectedCategory,
             categoriesList = this.categoriesList,
+            okButtonActive = this.screenName.isNotBlank() && screenElements.filter { it.isSelected }.isNotEmpty(),
+            screenName = this.screenName,
+            screenElements = this.screenElements,
         )
     }
 
@@ -63,11 +75,7 @@ class NewScreenDialog(project: Project, currentPath: CurrentPath?) : DialogWrapp
 
     override fun doOKAction() {
         launch {
-            viewModel.setAction(
-                NewScreenView.NewScreenAction.OkClicked(
-                    screenName = panel.nameTextField.text,
-                )
-            )
+            setAction(NewScreenView.NewScreenAction.OkClicked)
         }
     }
 
